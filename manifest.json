@@ -1,0 +1,74 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extName__",
+  "short_name": "NotebookLM Assistant",
+  "version": "3.0.0",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
+
+  "permissions": [
+    "tabs",
+    "storage",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "debugger",
+    "notifications"
+  ],
+
+  "host_permissions": [
+    "https://notebooklm.google.com/*",
+    "https://www.youtube.com/*",
+    "https://accounts.google.com/*"
+  ],
+
+  "commands": {
+    "add-current-page": {
+      "suggested_key": { "default": "Alt+Shift+N" },
+      "description": "__MSG_cmdAddPage__"
+    },
+    "add-as-pdf": {
+      "suggested_key": { "default": "Alt+Shift+P" },
+      "description": "__MSG_cmdAddPdf__"
+    }
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "__MSG_extName__",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://notebooklm.google.com/*"],
+      "js": ["content/notebooklm.js"],
+      "css": ["content/notebooklm.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["https://notebooklm.google.com/*", "https://www.youtube.com/*"]
+    }
+  ]
+}
