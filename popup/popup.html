@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=380">
+  <title>NotebookLM Assistant</title>
+  <link rel="stylesheet" href="icons.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ─── Header ─── -->
+  <header class="header">
+    <div class="header-left">
+      <img class="logo" src="../icons/icon32.png" width="24" height="24" alt="NotebookLM Assistant">
+      <span class="header-title" data-i18n="popupTitle">NotebookLM Assistant</span>
+    </div>
+
+  </header>
+
+  <!-- ─── Tab Navigation ─── -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="home"><i class="ms ms-home"></i><span data-i18n="tabHome">Home</span></button>
+    <button class="tab" data-tab="parsers"><i class="ms ms-rss_feed"></i><span data-i18n="tabParsers">Parsers</span></button>
+    <button class="tab" data-tab="queue"><i class="ms ms-queue"></i><span data-i18n="tabQueue">Queue</span></button>
+    <button class="tab" data-tab="organize"><i class="ms ms-folder_open"></i><span data-i18n="tabOrganize">Organize</span></button>
+    <button class="tab" data-tab="history"><i class="ms ms-history"></i><span data-i18n="tabHistory">History</span></button>
+    <button class="tab" data-tab="settings"><i class="ms ms-settings"></i><span data-i18n="tabSettings">Settings</span></button>
+  </nav>
+
+  <!-- ═══════ HOME TAB ═══════ -->
+  <section class="panel active" id="panel-home">
+
+    <!-- Account selector -->
+    <div class="field">
+      <label><i class="ms ms-person"></i> <span data-i18n="account">Account</span></label>
+      <select id="account-select" class="select"><option value="">Loading...</option></select>
+    </div>
+
+    <!-- Notebook selector -->
+    <div class="field">
+      <label><i class="ms ms-auto_stories"></i> <span data-i18n="notebook">Notebook</span></label>
+      <div class="row">
+        <select id="notebook-select" class="select flex-1"><option value="">Loading...</option></select>
+        <button class="btn btn-icon" id="refresh-notebooks" title="Refresh"><i class="ms ms-refresh"></i></button>
+      </div>
+    </div>
+
+    <!-- Create notebook -->
+    <details class="collapsible">
+      <summary><i class="ms ms-add"></i> <span data-i18n="createNotebook">Create notebook</span></summary>
+      <div class="row" style="margin-top:8px">
+        <input type="text" class="input flex-1" id="new-notebook-title" data-i18n-placeholder="newNotebookTitle" placeholder="New notebook title">
+        <button class="btn btn-primary" id="create-notebook"><i class="ms ms-add"></i> <span data-i18n="create">Create</span></button>
+      </div>
+    </details>
+
+    <hr class="divider">
+
+    <!-- Quick actions -->
+    <div class="actions">
+      <button class="btn btn-primary btn-full" id="add-current-page">
+        <i class="ms ms-add_link"></i> <span data-i18n="addCurrentPage">Add page</span>
+      </button>
+      <button class="btn btn-accent btn-full" id="add-as-pdf">
+        <i class="ms ms-picture_as_pdf"></i> <span data-i18n="addAsPdf">Save PDF</span>
+      </button>
+    </div>
+
+    <!-- Single URL add -->
+    <div class="row">
+      <input type="text" class="input flex-1" id="single-url" data-i18n-placeholder="enterUrl" placeholder="Enter URL...">
+      <button class="btn btn-primary" id="add-single-url"><i class="ms ms-send"></i></button>
+    </div>
+
+    <!-- Bulk import -->
+    <details class="collapsible">
+      <summary><i class="ms ms-playlist_add"></i> <span data-i18n="bulkImport">Bulk import URLs</span></summary>
+      <textarea class="textarea" id="bulk-urls" rows="4" data-i18n-placeholder="bulkPlaceholder" placeholder="Paste URLs, one per line..."></textarea>
+      <div class="row" style="margin-top:6px">
+        <button class="btn btn-primary" id="bulk-add"><i class="ms ms-add"></i> <span data-i18n="addAll">Add all</span></button>
+        <button class="btn" id="bulk-queue"><i class="ms ms-queue"></i> <span data-i18n="addAll">Add to queue</span></button>
+      </div>
+    </details>
+
+    <!-- Import tabs -->
+    <button class="btn btn-full" id="import-tabs">
+      <i class="ms ms-tab"></i> <span data-i18n="importTabs">Import open tabs</span>
+    </button>
+
+    <!-- Status message -->
+    <div class="status" id="home-status"></div>
+  </section>
+
+  <!-- ═══════ PARSERS TAB ═══════ -->
+  <section class="panel" id="panel-parsers">
+
+    <!-- YouTube Comments -->
+    <div class="card">
+      <h3><i class="ms ms-smart_display"></i> <span data-i18n="parseComments">Parse YouTube Comments</span></h3>
+      <div id="yt-info" class="info-box" style="display:none"></div>
+
+      <div class="field">
+        <label data-i18n="commentsMode">Sort by</label>
+        <select id="comments-mode" class="select">
+          <option value="top" data-i18n="commentsTop">Top comments</option>
+          <option value="new" data-i18n="commentsNewest">Newest first</option>
+        </select>
+      </div>
+      <div class="row">
+        <label class="checkbox-label">
+          <input type="checkbox" id="comments-replies" checked>
+          <span data-i18n="commentsIncludeReplies">Include replies</span>
+        </label>
+        <div class="field-sm">
+          <label data-i18n="commentsLimit">Max</label>
+          <input type="number" class="input input-sm" id="comments-limit" value="1000" min="0" max="99999">
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="start-parse">
+        <i class="ms ms-play_arrow"></i> <span data-i18n="startParsing">Start parsing</span>
+      </button>
+      <div class="progress-area" id="parse-progress" style="display:none">
+        <div class="progress-bar"><div class="progress-fill" id="parse-fill"></div></div>
+        <span class="progress-text" id="parse-text"></span>
+        <button class="btn btn-sm" id="cancel-parse"><i class="ms ms-close"></i> <span data-i18n="cancelParsing">Cancel</span></button>
+      </div>
+    </div>
+
+    <!-- RSS / Sitemap -->
+    <div class="card">
+      <h3><i class="ms ms-rss_feed"></i> <span data-i18n="rssImport">RSS / Sitemap import</span></h3>
+      <div class="row">
+        <input type="text" class="input flex-1" id="rss-url" data-i18n-placeholder="rssPlaceholder" placeholder="RSS, Atom, or Sitemap URL...">
+        <button class="btn btn-primary" id="rss-parse"><i class="ms ms-search"></i></button>
+      </div>
+      <button class="btn btn-full" id="rss-detect" style="margin-top:6px">
+        <i class="ms ms-manage_search"></i> <span data-i18n="rssAutoDetect">Auto-detect RSS on current page</span>
+      </button>
+      <div id="rss-results" class="results-list"></div>
+    </div>
+
+    <!-- YouTube Playlist/Channel -->
+    <div class="card">
+      <h3><i class="ms ms-playlist_play"></i> <span data-i18n="youtubePlaylist">YouTube Playlist / Channel</span></h3>
+      <button class="btn btn-primary btn-full" id="yt-extract">
+        <i class="ms ms-download"></i> <span data-i18n="ytExtract">Extract URLs from current tab</span>
+      </button>
+      <div id="yt-results" class="results-list"></div>
+    </div>
+
+    <!-- Extract links -->
+    <div class="card">
+      <h3><i class="ms ms-link"></i> <span data-i18n="extractLinks">Extract links from page</span></h3>
+      <button class="btn btn-full" id="extract-links">
+        <i class="ms ms-search"></i> <span data-i18n="extractLinks">Extract links</span>
+      </button>
+      <div id="links-results" class="results-list"></div>
+    </div>
+  </section>
+
+  <!-- ═══════ QUEUE TAB ═══════ -->
+  <section class="panel" id="panel-queue">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <h3><i class="ms ms-queue"></i> <span data-i18n="tabQueue">Queue</span></h3>
+        <span class="badge" id="queue-count">0</span>
+      </div>
+      <div id="queue-list" class="queue-list"></div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn btn-primary flex-1" id="process-queue">
+          <i class="ms ms-play_arrow"></i> <span data-i18n="processQueue">Process queue</span>
+        </button>
+        <button class="btn" id="clear-queue"><i class="ms ms-delete"></i> <span data-i18n="clearQueue">Clear</span></button>
+      </div>
+      <div class="status" id="queue-status"></div>
+    </div>
+  </section>
+
+  <!-- ═══════ ORGANIZE TAB ═══════ -->
+  <section class="panel" id="panel-organize">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <h3><i class="ms ms-source"></i> <span data-i18n="sources">Sources</span></h3>
+        <button class="btn btn-sm" id="refresh-sources"><i class="ms ms-refresh"></i></button>
+      </div>
+      <div id="sources-list" class="sources-list"></div>
+      <div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-sm" id="select-all-sources"><i class="ms ms-select_all"></i> <span data-i18n="selectAll">Select all</span></button>
+        <button class="btn btn-sm btn-danger" id="delete-selected" style="display:none">
+          <i class="ms ms-delete"></i> <span data-i18n="deleteSelected">Delete</span> (<span id="del-count">0</span>)
+        </button>
+        <button class="btn btn-sm" id="sync-drive"><i class="ms ms-sync"></i> <span data-i18n="syncDrive">Sync Drive</span></button>
+        <button class="btn btn-sm" id="export-sources"><i class="ms ms-download"></i> <span data-i18n="exportSources">Export</span></button>
+      </div>
+      <div class="status" id="organize-status"></div>
+    </div>
+  </section>
+
+  <!-- ═══════ HISTORY TAB ═══════ -->
+  <section class="panel" id="panel-history">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <h3><i class="ms ms-history"></i> <span data-i18n="tabHistory">History</span></h3>
+        <button class="btn btn-sm" id="clear-history"><i class="ms ms-delete"></i></button>
+      </div>
+      <input type="text" class="input" id="history-search" data-i18n-placeholder="searchHistory" placeholder="Search history...">
+      <div id="history-list" class="history-list"></div>
+    </div>
+  </section>
+
+  <!-- ═══════ SETTINGS TAB ═══════ -->
+  <section class="panel" id="panel-settings">
+    <div class="card">
+      <h3><i class="ms ms-settings"></i> <span data-i18n="tabSettings">Settings</span></h3>
+
+      <div class="field">
+        <label><i class="ms ms-palette"></i> <span data-i18n="settingsTheme">Theme</span></label>
+        <select id="settings-theme" class="select select-sm">
+          <option value="light" data-i18n="themeLight">Light</option>
+          <option value="dark" data-i18n="themeDark">Dark</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label><i class="ms ms-language"></i> <span data-i18n="settingsLanguage">Language</span></label>
+        <select id="settings-lang" class="select select-sm">
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label><i class="ms ms-timer"></i> <span data-i18n="settingsDelay">Delay between adds (ms)</span></label>
+        <input type="number" class="input input-sm" id="settings-delay" value="2000" min="500" max="30000" step="500">
+      </div>
+
+      <label class="checkbox-label">
+        <input type="checkbox" id="settings-bulk-delete" checked>
+        <span data-i18n="settingsBulkDelete">Enable bulk delete on NLM</span>
+      </label>
+
+      <label class="checkbox-label">
+        <input type="checkbox" id="settings-sync-drive" checked>
+        <span data-i18n="settingsSyncDrive">Show Drive sync button</span>
+      </label>
+
+      <label class="checkbox-label">
+        <input type="checkbox" id="settings-notifications" checked>
+        <span data-i18n="settingsNotifications">Show notifications</span>
+      </label>
+
+      <hr class="divider">
+
+      <div class="row">
+        <button class="btn" id="backup-settings"><i class="ms ms-download"></i> <span data-i18n="settingsBackup">Backup</span></button>
+        <button class="btn" id="restore-settings"><i class="ms ms-upload"></i> <span data-i18n="settingsRestore">Restore</span></button>
+        <input type="file" id="restore-file" accept=".json" style="display:none">
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="../lib/i18n.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

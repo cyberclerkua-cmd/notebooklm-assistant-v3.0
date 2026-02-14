@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NotebookLM Assistant — Import Tabs</title>
+  <link rel="stylesheet" href="../popup/icons.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, system-ui, sans-serif;
+      background: #f8f9fa;
+      color: #1f1f1f;
+      padding: 24px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    /* .ms icons loaded from ../popup/icons.css */
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    select, .btn {
+      padding: 8px 16px;
+      border: 1px solid #dadce0;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 13px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      transition: all 200ms;
+    }
+    .btn:hover { background: #f0f1f3; }
+    .btn-primary { background: #4285f4; color: #fff; border-color: #4285f4; }
+    .btn-primary:hover { background: #3367d6; }
+    .btn-secondary { background: #34a853; color: #fff; border-color: #34a853; }
+    .btn-secondary:hover { background: #2d8e47; }
+    .tab-list {
+      list-style: none;
+    }
+    .tab-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid #e8eaed;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      background: #fff;
+      transition: all 200ms;
+    }
+    .tab-item:hover { background: #f0f4ff; }
+    .tab-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #4285f4;
+    }
+    .tab-item img {
+      width: 16px;
+      height: 16px;
+    }
+    .tab-item .title {
+      flex: 1;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tab-item .url {
+      font-size: 11px;
+      color: #5f6368;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 300px;
+    }
+    .status {
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      display: none;
+    }
+    .status.success { display: block; background: #e6f4ea; color: #137333; }
+    .status.error { display: block; background: #fce8e6; color: #c5221f; }
+    .status.info { display: block; background: #e8f0fe; color: #1a73e8; }
+    .count { font-size: 13px; color: #5f6368; }
+  </style>
+</head>
+<body>
+  <h1><i class="ms ms-tab"></i> Import Open Tabs</h1>
+
+  <div class="controls">
+    <select id="notebook-select">
+      <option value="">Select notebook...</option>
+    </select>
+    <button class="btn" id="select-all"><i class="ms ms-select_all"></i> Select all</button>
+    <button class="btn btn-primary" id="add-selected"><i class="ms ms-add"></i> Add selected</button>
+    <button class="btn btn-secondary" id="add-as-queue"><i class="ms ms-queue"></i> Add to queue</button>
+    <span class="count" id="count">0 tabs</span>
+  </div>
+
+  <ul class="tab-list" id="tab-list"></ul>
+  <div class="status" id="status"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
